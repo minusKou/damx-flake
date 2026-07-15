@@ -33,6 +33,7 @@ stdenv.mkDerivation {
   unpackPhase = ''
     mkdir -p source
     cp -r $src/* source/
+    chmod -R u+w source
   '';
 
   nativeBuildInputs = [ autoPatchelfHook makeWrapper ];

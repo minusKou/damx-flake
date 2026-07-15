@@ -19,6 +19,7 @@ stdenv'.mkDerivation {
   unpackPhase = ''
     mkdir -p source
     cp -r $src/Linuwu-Sense/* source/
+    chmod -R u+w source
   '';
 
   # This pulls in everything needed to compile a kernel module

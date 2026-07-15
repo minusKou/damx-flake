@@ -14,7 +14,7 @@
       # and share it between both the suite and the kernel module!
       damx-source = pkgs.fetchzip {
         url = "https://github.com/PXDiv/Div-Acer-Manager-Max/releases/download/v0.9.1/DAMX-0.9.1.tar.xz";
-        hash = "sha256:d9a9ad5a4661f8048f98dea9e9a956a3cb219eba72ec076144694075ced69484";
+        hash = "sha256-XU8BC3KrgRRoXrTc1tYFFxqsKhZQVX6u4ch6b57Y7bs=";
       };
     in
     {

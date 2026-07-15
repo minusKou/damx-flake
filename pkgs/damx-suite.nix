@@ -1,8 +1,12 @@
 { lib, stdenv, fetchzip, autoPatchelfHook, makeWrapper, zlib, icu, fontconfig, libGL, libx11, libice, libsm, libxext, libxcursor, libxrandr, libxi, libxrender, libxcb, libglvnd }:
 
+let
+  version = "0.9.1";
+in
+
 stdenv.mkDerivation {
   pname = "damx-suite";
-  version = "0.9.1";
+  inherit version;
 
   src = fetchzip {
     # Replace this URL with the actual link to the release zip/tarball

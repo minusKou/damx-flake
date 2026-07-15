@@ -10,7 +10,7 @@ stdenv.mkDerivation {
 
   src = fetchzip {
     # Replace this URL with the actual link to the release zip/tarball
-    url = "https://github.com/PXDiv/Div-Acer-Manager-Max/releases/download/v${version}/DAMX-v${version}.zip";
+  url = "https://github.com/PXDiv/Div-Acer-Manager-Max/releases/download/v${version}/DAMX-${version}.tar.xz";
     
     # We will generate this hash in a second!
     hash = "";

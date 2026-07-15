@@ -9,15 +9,24 @@
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
+
+      # 1. Define the source ONCE here. Nix will cache this single download 
+      # and share it between both the suite and the kernel module!
+      damx-source = pkgs.fetchzip {
+        url = "https://github.com/PXDiv/Div-Acer-Manager-Max/releases/download/v0.9.1/DAMX-v0.9.1.tar.xz";
+        hash = "sha256:d9a9ad5a4661f8048f98dea9e9a956a3cb219eba72ec076144694075ced69484";
+      };
     in
     {
-      # 1. Expose the GUI and Daemon packages
+      # Expose packages so you can build them independently with `nix build`
       packages.${system} = {
-        damx-suite = pkgs.callPackage ./pkgs/damx-suite.nix {};
+        # Pass the pre-downloaded source directly into both package derivations
+        damx-suite = pkgs.callPackage ./pkgs/damx-suite.nix { src = damx-source; };
+        linuwu-sense = pkgs.callPackage ./pkgs/linuwu-sense.nix { src = damx-source; };
         default = self.packages.${system}.damx-suite;
       };
 
-      # 2. Expose the NixOS Module (The magic 1-liner for users)
+      # Expose the NixOS Module (The magic 1-liner for users)
       nixosModules.default = { config, lib, pkgs, ... }: {
         options.programs.damx = {
           enable = lib.mkEnableOption "Div Acer Manager Max (DAMX)";
@@ -27,9 +36,9 @@
           # Install the GUI and Daemon
           environment.systemPackages = [ self.packages.${system}.damx-suite ];
 
-          # Compile and load the kernel module for their specific kernel
+          # Compile and load the kernel module targeting the user's running kernel
           boot.extraModulePackages = [
-            (config.boot.kernelPackages.callPackage ./pkgs/linuwu-sense.nix {})
+            (config.boot.kernelPackages.callPackage ./pkgs/linuwu-sense.nix { src = damx-source; })
           ];
           boot.kernelModules = [ "linuwu_sense" ];
 

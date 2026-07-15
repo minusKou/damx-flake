@@ -1,15 +1,20 @@
-{ stdenv, lib, fetchzip, kernel }:
+{ stdenv, lib, kernel, src }:
 
-stdenv.mkDerivation rec {
+stdenv.mkDerivation {
   pname = "linuwu-sense";
   version = "0.9.1-${kernel.version}";
 
-  src = fetchzip {
-    url = "https://github.com/PXDiv/Div-Acer-Manager-Max/releases/download/v0.9.1/DAMX-v0.9.1.zip";
-    hash = "";
-  };
+  # Re-use the passed source
+  inherit src;
 
-  sourceRoot = "${src.name}/Linuwu-Sense";
+  # Tell the builder to use the 'source' folder as the workspace root after unpacking
+  sourceRoot = "source";
+
+  # Copy our files into 'source' so the builder can automatically enter it and run 'make'
+  unpackPhase = ''
+    mkdir -p source
+    cp -r $src/Linuwu-Sense/* source/
+  '';
 
   # This pulls in everything needed to compile a kernel module
   nativeBuildInputs = kernel.moduleBuildDependencies;
@@ -24,6 +29,6 @@ stdenv.mkDerivation rec {
   # Copy the resulting .ko file to the output directory
   installPhase = ''
     mkdir -p $out/lib/modules/${kernel.modDirVersion}/extra
-    install -Dm644 src/linuwu_sense.ko $out/lib/modules/${kernel.modDirVersion}/extra/linuwu_sense.ko
+    install -Dm644 linuwu_sense.ko $out/lib/modules/${kernel.modDirVersion}/extra/linuwu_sense.ko
   '';
 }

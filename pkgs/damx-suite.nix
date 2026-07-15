@@ -1,26 +1,45 @@
-{ lib, stdenv, fetchzip, autoPatchelfHook, makeWrapper, zlib, icu, fontconfig, libGL, libx11, libice, libsm, libxext, libxcursor, libxrandr, libxi, libxrender, libxcb, libglvnd }:
-
-let
-  version = "0.9.1";
-in
+{ lib
+, stdenv
+, autoPatchelfHook
+, makeWrapper
+, zlib
+, icu
+, fontconfig
+, libGL
+, libx11
+, libice
+, libsm
+, libxext
+, libxcursor
+, libxrandr
+, libxi
+, libxrender
+, libxcb
+, libglvnd
+, src
+}:
 
 stdenv.mkDerivation {
   pname = "damx-suite";
-  inherit version;
+  version = "0.9.1";
 
-  src = fetchzip {
-    # Replace this URL with the actual link to the release zip/tarball
-  url = "https://github.com/PXDiv/Div-Acer-Manager-Max/releases/download/v${version}/DAMX-${version}.tar.xz";
-    
-    # We will generate this hash in a second!
-    hash = "sha256-XU8BC3KrgRRoXrTc1tYFFxqsKhZQVX6u4ch6b57Y7bs=";
-  };
+  # Consume the single download passed from your flake
+  inherit src;
+
+  # Tell Nix to work out of a folder named 'source'
+  sourceRoot = "source";
+
+  # Simply copy the whole structure over so we can work with standard local paths
+  unpackPhase = ''
+    mkdir -p source
+    cp -r $src/* source/
+  '';
 
   nativeBuildInputs = [ autoPatchelfHook makeWrapper ];
 
   buildInputs = [
-    stdenv.cc.cc.lib 
-    zlib 
+    stdenv.cc.cc.lib
+    zlib
     icu
     fontconfig
     libGL
@@ -49,16 +68,16 @@ stdenv.mkDerivation {
 
     # Create desktop file
     cat > $out/share/applications/damx.desktop << EOF
-    [Desktop Entry]
-    Name=DAMX
-    Comment=Div Acer Manager Max
-    Exec=$out/bin/DivAcerManagerMax
-    Icon=damx
-    Terminal=false
-    Type=Application
-    Categories=Utility;System;
-    Keywords=acer;laptop;system;
-    EOF
+[Desktop Entry]
+Name=DAMX
+Comment=Div Acer Manager Max
+Exec=$out/bin/DivAcerManagerMax
+Icon=damx
+Terminal=false
+Type=Application
+Categories=Utility;System;
+Keywords=acer;laptop;system;
+EOF
 
     # Re-create the DAMX shortcut
     makeWrapper $out/bin/DivAcerManagerMax $out/bin/DAMX

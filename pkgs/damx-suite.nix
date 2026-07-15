@@ -13,7 +13,7 @@ stdenv.mkDerivation {
   url = "https://github.com/PXDiv/Div-Acer-Manager-Max/releases/download/v${version}/DAMX-${version}.tar.xz";
     
     # We will generate this hash in a second!
-    hash = "";
+    hash = "sha256-XU8BC3KrgRRoXrTc1tYFFxqsKhZQVX6u4ch6b57Y7bs=";
   };
 
   nativeBuildInputs = [ autoPatchelfHook makeWrapper ];

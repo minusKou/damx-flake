@@ -12,10 +12,7 @@
 
       # 1. Define the source ONCE here. Nix will cache this single download 
       # and share it between both the suite and the kernel module!
-      damx-source = pkgs.fetchzip {
-        url = "https://github.com/PXDiv/Div-Acer-Manager-Max/releases/download/v0.9.1/DAMX-0.9.1.tar.xz";
-        hash = "sha256-XU8BC3KrgRRoXrTc1tYFFxqsKhZQVX6u4ch6b57Y7bs=";
-      };
+      damx-source = ./DAMX;
     in
     {
       # Expose packages so you can build them independently with `nix build`

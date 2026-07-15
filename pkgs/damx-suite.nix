@@ -1,4 +1,4 @@
-{ lib, stdenv, autoPatchelfHook, makeWrapper, zlib, icu, fontconfig, libGL, libx11, libice, libsm, libxext, libxcursor, libxrandr, libxi, libxrender, libxcb, libglvnd }:
+{ lib, stdenv, fetchzip, autoPatchelfHook, makeWrapper, zlib, icu, fontconfig, libGL, libx11, libice, libsm, libxext, libxcursor, libxrandr, libxi, libxrender, libxcb, libglvnd }:
 
 stdenv.mkDerivation {
   pname = "damx-suite";

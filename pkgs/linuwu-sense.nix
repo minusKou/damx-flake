@@ -1,4 +1,4 @@
-{ stdenv, lib, kernel }:
+{ stdenv, lib, fetchzip, kernel }:
 
 stdenv.mkDerivation {
   pname = "linuwu-sense";

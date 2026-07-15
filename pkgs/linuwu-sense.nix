@@ -1,6 +1,6 @@
 { stdenv, lib, fetchzip, kernel }:
 
-stdenv.mkDerivation {
+stdenv.mkDerivation rec {
   pname = "linuwu-sense";
   version = "0.9.1-${kernel.version}";
 

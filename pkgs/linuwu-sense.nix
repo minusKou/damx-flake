@@ -6,7 +6,7 @@ stdenv.mkDerivation {
 
   src = fetchzip {
     url = "https://github.com/PXDiv/Div-Acer-Manager-Max/releases/download/v0.9.1/DAMX-v0.9.1.zip";
-    hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+    hash = "";
   };
 
   sourceRoot = "${src.name}/Linuwu-Sense";

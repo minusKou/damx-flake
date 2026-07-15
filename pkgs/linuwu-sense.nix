@@ -1,6 +1,11 @@
 { stdenv, lib, kernel, src }:
 
-stdenv.mkDerivation {
+let
+  # Grabs kernel compilation stdenv
+  stdenv' = if kernel ? stdenv then kernel.stdenv else stdenv;
+in
+
+stdenv'.mkDerivation {
   pname = "linuwu-sense";
   version = "0.9.1-${kernel.version}";
 
@@ -24,6 +29,9 @@ stdenv.mkDerivation {
   makeFlags = [
     "KERNELDIR=${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
     "KDIR=${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
+  ] ++ lib.optionals (stdenv'.cc.isClang or false) [
+    "LLVM=1"
+    "LLVM_IAS=1"
   ];
 
   # Copy the resulting .ko file to the output directory

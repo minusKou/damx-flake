@@ -35,7 +35,8 @@
  #include <linux/units.h>
  #include <linux/unaligned.h>
  #include <linux/bitfield.h>
- #include <linux/bitmap.h>
+#include <linux/string.h>
+#include <linux/bitmap.h>
  
  MODULE_AUTHOR("Carlos Corbacho");
  MODULE_DESCRIPTION("Acer Laptop WMI Extras Driver");

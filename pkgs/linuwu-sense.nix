@@ -24,27 +24,21 @@ stdenv'.mkDerivation {
 
   buildPhase = ''
     runHook preBuild
-    if [ -d "src" ] && [ -f "src/Makefile" -o -f "src/Kbuild" ]; then
-      make -C ${kernel.dev}/lib/modules/${kernel.modDirVersion}/build M=$PWD/src modules
-    else
-      make -C ${kernel.dev}/lib/modules/${kernel.modDirVersion}/build M=$PWD modules
-    fi
+    if [ -d "src" ]; then cd src; fi
+    make -C ${kernel.dev}/lib/modules/${kernel.modDirVersion}/build M=$PWD modules
     runHook postBuild
   '';
 
   installPhase = ''
     runHook preInstall
-    if [ -d "src" ] && [ -f "src/Makefile" -o -f "src/Kbuild" ]; then
-      make -C ${kernel.dev}/lib/modules/${kernel.modDirVersion}/build M=$PWD/src modules_install INSTALL_MOD_PATH=$out INSTALL_MOD_DIR=extra
-    else
-      make -C ${kernel.dev}/lib/modules/${kernel.modDirVersion}/build M=$PWD modules_install INSTALL_MOD_PATH=$out INSTALL_MOD_DIR=extra
-    fi
+    if [ -d "src" ] && [[ "$PWD" != *"/src" ]]; then cd src; fi
+    make -C ${kernel.dev}/lib/modules/${kernel.modDirVersion}/build M=$PWD modules_install INSTALL_MOD_PATH=$out INSTALL_MOD_DIR=extra
     runHook postInstall
   '';
 
-  # Fix for nixpkgs aggregateModules missing .ko.cer error
+  # Touch .ko.cer for all installed modules to satisfy NixOS aggregateModules
   postInstall = ''
-    find $out -name '*.ko' -exec touch {}.cer \;
+    find $out -name "*.ko" -exec touch {}.cer \;
   '';
 
   meta = with lib; {

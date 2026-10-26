@@ -15,8 +15,6 @@ stdenv'.mkDerivation {
     "KERNELRELEASE=${kernel.modDirVersion}"
     "KERNELDIR=${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
     "KDIR=${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
-    "INSTALL_MOD_PATH=$(out)"
-    "INSTALL_MOD_DIR=extra"
   ] ++ lib.optionals (stdenv'.cc.isClang or false) [
     "LLVM=1"
     "LLVM_IAS=1"
@@ -30,11 +28,15 @@ stdenv'.mkDerivation {
 
   installPhase = ''
     runHook preInstall
-    make -C ${kernel.dev}/lib/modules/${kernel.modDirVersion}/build M=$PWD modules_install INSTALL_MOD_PATH=$out INSTALL_MOD_DIR=extra
+    # Create module output directory
+    mkdir -p $out/lib/modules/${kernel.modDirVersion}/extra
+
+    # Copy built linuwu_sense.ko directly into extra/ (prevents extra/src/ nesting)
+    find . -name "linuwu_sense.ko" -exec cp -f {} $out/lib/modules/${kernel.modDirVersion}/extra/ \;
     runHook postInstall
   '';
 
-  # Touch .ko.cer for all installed modules to satisfy NixOS aggregateModules
+  # Generate dummy .ko.cer files to satisfy CachyOS / NixOS module aggregation hooks
   postInstall = ''
     find $out -name "*.ko" -exec touch {}.cer \;
   '';

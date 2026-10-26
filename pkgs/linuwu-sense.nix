@@ -1,4 +1,3 @@
-# inside damx-flake/linuwu-sense.nix
 { stdenv, lib, kernel, src }:
 
 let
@@ -41,6 +40,11 @@ stdenv'.mkDerivation {
       make -C ${kernel.dev}/lib/modules/${kernel.modDirVersion}/build M=$PWD modules_install INSTALL_MOD_PATH=$out INSTALL_MOD_DIR=extra
     fi
     runHook postInstall
+  '';
+
+  # Fix for nixpkgs aggregateModules missing .ko.cer error
+  postInstall = ''
+    find $out -name '*.ko' -exec touch {}.cer \;
   '';
 
   meta = with lib; {

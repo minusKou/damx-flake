@@ -24,14 +24,12 @@ stdenv'.mkDerivation {
 
   buildPhase = ''
     runHook preBuild
-    if [ -d "src" ]; then cd src; fi
     make -C ${kernel.dev}/lib/modules/${kernel.modDirVersion}/build M=$PWD modules
     runHook postBuild
   '';
 
   installPhase = ''
     runHook preInstall
-    if [ -d "src" ] && [[ "$PWD" != *"/src" ]]; then cd src; fi
     make -C ${kernel.dev}/lib/modules/${kernel.modDirVersion}/build M=$PWD modules_install INSTALL_MOD_PATH=$out INSTALL_MOD_DIR=extra
     runHook postInstall
   '';

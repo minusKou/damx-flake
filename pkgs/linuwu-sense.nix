@@ -1,3 +1,4 @@
+# inside damx-flake/linuwu-sense.nix
 { stdenv, lib, kernel, src }:
 
 let
@@ -9,27 +10,43 @@ stdenv'.mkDerivation {
 
   inherit src;
 
-  sourceRoot = "source";
-
-  unpackPhase = ''
-    mkdir -p source
-    cp -r $src/Linuwu-Sense/* source/
-    chmod -R u+w source
-  '';
-
   nativeBuildInputs = kernel.moduleBuildDependencies;
 
-  makeFlags = [
+  makeFlags = kernel.makeFlags ++ [
+    "KERNELRELEASE=${kernel.modDirVersion}"
     "KERNELDIR=${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
     "KDIR=${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
+    "INSTALL_MOD_PATH=$(out)"
+    "INSTALL_MOD_DIR=extra"
   ] ++ lib.optionals (stdenv'.cc.isClang or false) [
     "LLVM=1"
     "LLVM_IAS=1"
   ];
 
-  # Look inside the src/ folder where it was built!
-  installPhase = ''
-    mkdir -p $out/lib/modules/${kernel.modDirVersion}/extra
-    install -Dm644 src/linuwu_sense.ko $out/lib/modules/${kernel.modDirVersion}/extra/linuwu_sense.ko
+  buildPhase = ''
+    runHook preBuild
+    if [ -d "src" ] && [ -f "src/Makefile" -o -f "src/Kbuild" ]; then
+      make -C ${kernel.dev}/lib/modules/${kernel.modDirVersion}/build M=$PWD/src modules
+    else
+      make -C ${kernel.dev}/lib/modules/${kernel.modDirVersion}/build M=$PWD modules
+    fi
+    runHook postBuild
   '';
+
+  installPhase = ''
+    runHook preInstall
+    if [ -d "src" ] && [ -f "src/Makefile" -o -f "src/Kbuild" ]; then
+      make -C ${kernel.dev}/lib/modules/${kernel.modDirVersion}/build M=$PWD/src modules_install INSTALL_MOD_PATH=$out INSTALL_MOD_DIR=extra
+    else
+      make -C ${kernel.dev}/lib/modules/${kernel.modDirVersion}/build M=$PWD modules_install INSTALL_MOD_PATH=$out INSTALL_MOD_DIR=extra
+    fi
+    runHook postInstall
+  '';
+
+  meta = with lib; {
+    description = "Linux kernel module for Acer Predator & Nitro hardware control";
+    homepage = "https://github.com/0x7375646F/Linuwu-Sense";
+    license = licenses.gpl2Only;
+    platforms = platforms.linux;
+  };
 }
